@@ -1,4 +1,9 @@
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import java.util.Scanner;
+import java.util.regex.Pattern;
+
 
 public class Main {
 
@@ -30,6 +35,11 @@ public class Main {
             "qwerty12345", "qwaszx", "1234567891", "456123", "444444", "qq123456", "xxx"
     };
 
+
+    public static String renameBoolean(boolean status) {
+        return status ? "Yes" : "No";
+    }
+
     public static boolean checkForBadPassword(String password) {
         for (String x : badPasswords) {
             if (x.equals(password)) {
@@ -39,7 +49,7 @@ public class Main {
         return false;
     }
 
-    public static boolean validatePasswordLength(String password) {
+    public static boolean validateLength(String password) {
         return password.length() >= MIN_LENGTH;
     }
 
@@ -55,6 +65,40 @@ public class Main {
         return password.matches(".*[A-Z].*");
     }
 
+    public static boolean hasSpecialChar(String password) {
+        Pattern specialChar = Pattern.compile("[^a-zA-Z0-9]");
+//        pattern.matcher(password).find();
+        return specialChar.matcher(password).find();
+    }
+
+    public static String encodePassword(String password) {
+        PasswordEncoder encoder = new BCryptPasswordEncoder();
+        String split = "\\$2a\\$10\\$";
+        String encodedPassword;
+        do {
+            encodedPassword = encoder.encode(password);
+        } while(!checkPassword(encodedPassword.split(split)[1]));
+        return encodedPassword.split(split)[1];
+    }
+
+    public static boolean checkPassword(String password) {
+        return validateLength(password) && hasNumbers(password) && hasLowerCase(password) && hasUpperCase(password)
+                && hasSpecialChar(password);
+    }
+
+    public static void validatePassword(String password) {
+        if (!checkForBadPassword(password)) {
+            System.out.println("Password Long Enough: " + renameBoolean(validateLength(password)));
+            System.out.println("Has numbers: " + renameBoolean(hasNumbers(password)));
+            System.out.println("Has lower case: " + renameBoolean(hasLowerCase(password)));
+            System.out.println("Has upper case: " + renameBoolean(hasUpperCase(password)));
+            System.out.println("Has special character: " + renameBoolean(hasSpecialChar(password)));
+        } else {
+            System.out.println("Found given password in list of bad passwords\n" +
+                    "Please use another password");
+        }
+    }
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         String password;
@@ -65,16 +109,9 @@ public class Main {
 
             System.out.print("Enter Password: ");
             password = scanner.nextLine();
+            validatePassword(password);
 
-            if (!checkForBadPassword(password)) {
-                System.out.println("Password Long Enough: " + validatePasswordLength(password));
-                System.out.println("Has numbers: " + hasNumbers(password));
-                System.out.println("Has lower case: " + hasLowerCase(password));
-                System.out.println("Has upper case: " + hasUpperCase(password));
-            } else {
-                System.out.println("Found given password in list of bad passwords\n" +
-                        "Please use another password");
-            }
+            System.out.println("Encrypted password: " + encodePassword(password));
 
             System.out.print("Continue (y|n)?: ");
             contInput = scanner.nextLine();

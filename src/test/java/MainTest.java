@@ -6,12 +6,12 @@ class MainTest {
 
     @Test
     void checkMinLengthTrue() {
-        assertTrue(Main.validatePasswordLength("IlikeTurtles"));
+        assertTrue(Main.validateLength("IlikeTurtles"));
     }
 
     @Test
     void checkMinLengthFalse() {
-        assertFalse(Main.validatePasswordLength("IlikeTu"));
+        assertFalse(Main.validateLength("IlikeTu"));
     }
 
     @Test
@@ -54,4 +54,14 @@ class MainTest {
         assertFalse(Main.checkForBadPassword("fjghu1!k"));
     }
 
+    @Test
+    void checkSpecialCharTrue() {
+        assertTrue(Main.hasSpecialChar("password_"));
+    }
+
+    @Test
+    void testRenamingBoolean() {
+        assertEquals("Yes", Main.renameBoolean(true));
+        assertEquals("No", Main.renameBoolean(false));
+    }
 }
