@@ -35,7 +35,6 @@ public class Main {
             "qwerty12345", "qwaszx", "1234567891", "456123", "444444", "qq123456", "xxx"
     };
 
-
     public static String renameBoolean(boolean status) {
         return status ? "Yes" : "No";
     }
